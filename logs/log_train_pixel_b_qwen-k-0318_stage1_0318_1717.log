@@ -1,0 +1,376 @@
+Logging to file: logs/test/log_train_pixel_b_qwen-k-0318_stage1_0318_1717.log
+Starting distributed training with world_size=1, rank=0
+Save PE at models/pixel_emb_b.pt
+[Init] New Pixel Embedding for b
+Save Heading at models/HeadPixel_b.pt
+[Init] New Readout Head for b
+[Stage 1] 联合训练 PE + Head + INP（Soft Prefix 可选）
+model : /home/vipuser/Model/QWEN_2.5_0.5B
+
+=== Epoch 1 / 6 开始 ===
+  Epoch 1 - Step 1 / 2442 loss=5.591534  samples=4
+  Epoch 1 - Step 51 / 2442 loss=3.464801  samples=204
+  Epoch 1 - Step 101 / 2442 loss=3.310692  samples=404
+  Epoch 1 - Step 151 / 2442 loss=3.134701  samples=604
+  Epoch 1 - Step 201 / 2442 loss=3.447704  samples=804
+  Epoch 1 - Step 251 / 2442 loss=3.196619  samples=1004
+  Epoch 1 - Step 301 / 2442 loss=2.973499  samples=1204
+  Epoch 1 - Step 351 / 2442 loss=3.178684  samples=1404
+  Epoch 1 - Step 401 / 2442 loss=3.193186  samples=1604
+  Epoch 1 - Step 451 / 2442 loss=2.835596  samples=1804
+  Epoch 1 - Step 501 / 2442 loss=3.233215  samples=2004
+  Epoch 1 - Step 551 / 2442 loss=3.059171  samples=2204
+  Epoch 1 - Step 601 / 2442 loss=3.066373  samples=2404
+  Epoch 1 - Step 651 / 2442 loss=3.102124  samples=2604
+  Epoch 1 - Step 701 / 2442 loss=3.017983  samples=2804
+  Epoch 1 - Step 751 / 2442 loss=3.242018  samples=3004
+  Epoch 1 - Step 801 / 2442 loss=2.898452  samples=3204
+  Epoch 1 - Step 851 / 2442 loss=2.930900  samples=3404
+  Epoch 1 - Step 901 / 2442 loss=2.832996  samples=3604
+  Epoch 1 - Step 951 / 2442 loss=3.119654  samples=3804
+  Epoch 1 - Step 1001 / 2442 loss=3.015614  samples=4004
+  Epoch 1 - Step 1051 / 2442 loss=3.193632  samples=4204
+  Epoch 1 - Step 1101 / 2442 loss=2.649408  samples=4404
+  Epoch 1 - Step 1151 / 2442 loss=3.011875  samples=4604
+  Epoch 1 - Step 1201 / 2442 loss=3.133682  samples=4804
+  Epoch 1 - Step 1251 / 2442 loss=2.733714  samples=5004
+  Epoch 1 - Step 1301 / 2442 loss=2.802747  samples=5204
+  Epoch 1 - Step 1351 / 2442 loss=2.616438  samples=5404
+  Epoch 1 - Step 1401 / 2442 loss=3.017264  samples=5604
+  Epoch 1 - Step 1451 / 2442 loss=2.681710  samples=5804
+  Epoch 1 - Step 1501 / 2442 loss=2.692879  samples=6004
+  Epoch 1 - Step 1551 / 2442 loss=2.498657  samples=6204
+  Epoch 1 - Step 1601 / 2442 loss=2.540661  samples=6404
+  Epoch 1 - Step 1651 / 2442 loss=2.951146  samples=6604
+  Epoch 1 - Step 1701 / 2442 loss=2.864281  samples=6804
+  Epoch 1 - Step 1751 / 2442 loss=2.768847  samples=7004
+  Epoch 1 - Step 1801 / 2442 loss=2.952780  samples=7204
+  Epoch 1 - Step 1851 / 2442 loss=2.835111  samples=7404
+  Epoch 1 - Step 1901 / 2442 loss=2.855487  samples=7604
+  Epoch 1 - Step 1951 / 2442 loss=3.269372  samples=7804
+  Epoch 1 - Step 2001 / 2442 loss=3.117433  samples=8004
+  Epoch 1 - Step 2051 / 2442 loss=2.767610  samples=8204
+  Epoch 1 - Step 2101 / 2442 loss=3.076585  samples=8404
+  Epoch 1 - Step 2151 / 2442 loss=2.895173  samples=8604
+  Epoch 1 - Step 2201 / 2442 loss=2.937063  samples=8804
+  Epoch 1 - Step 2251 / 2442 loss=2.790147  samples=9004
+  Epoch 1 - Step 2301 / 2442 loss=2.977687  samples=9204
+  Epoch 1 - Step 2351 / 2442 loss=2.826124  samples=9404
+  Epoch 1 - Step 2401 / 2442 loss=2.947615  samples=9604
+  Epoch 1 - Step 2442 / 2442 loss=3.258979  samples=9767
+[New Best] BPP = 11.766088 at epoch 1
+Save PE at models/pixel_emb_b_stage1_best.pt
+Save Heading at models/HeadPixel_b_stage1_best.pt
+[IntraPos] Saved to models/INP_b_stage1_best.pt
+2026-03-18 17:30:48
+=== Epoch 1 完成 ===
+  Avg Train Loss : 2.939713
+  Current BPP    : 11.766088
+  Best BPP       : 11.766088 (epoch 1)
+
+=== Epoch 2 / 6 开始 ===
+  Epoch 2 - Step 1 / 2442 loss=2.995640  samples=4
+  Epoch 2 - Step 51 / 2442 loss=2.992770  samples=204
+  Epoch 2 - Step 101 / 2442 loss=2.534242  samples=404
+  Epoch 2 - Step 151 / 2442 loss=2.613573  samples=604
+  Epoch 2 - Step 201 / 2442 loss=2.696728  samples=804
+  Epoch 2 - Step 251 / 2442 loss=2.409598  samples=1004
+  Epoch 2 - Step 301 / 2442 loss=2.616711  samples=1204
+  Epoch 2 - Step 351 / 2442 loss=2.886741  samples=1404
+  Epoch 2 - Step 401 / 2442 loss=3.056000  samples=1604
+  Epoch 2 - Step 451 / 2442 loss=3.007989  samples=1804
+  Epoch 2 - Step 501 / 2442 loss=2.942856  samples=2004
+  Epoch 2 - Step 551 / 2442 loss=2.606424  samples=2204
+  Epoch 2 - Step 601 / 2442 loss=2.844313  samples=2404
+  Epoch 2 - Step 651 / 2442 loss=2.760646  samples=2604
+  Epoch 2 - Step 701 / 2442 loss=2.628516  samples=2804
+  Epoch 2 - Step 751 / 2442 loss=2.805641  samples=3004
+  Epoch 2 - Step 801 / 2442 loss=2.603149  samples=3204
+  Epoch 2 - Step 851 / 2442 loss=2.917861  samples=3404
+  Epoch 2 - Step 901 / 2442 loss=2.367237  samples=3604
+  Epoch 2 - Step 951 / 2442 loss=3.160248  samples=3804
+  Epoch 2 - Step 1001 / 2442 loss=2.888025  samples=4004
+  Epoch 2 - Step 1051 / 2442 loss=2.781564  samples=4204
+  Epoch 2 - Step 1101 / 2442 loss=2.897705  samples=4404
+  Epoch 2 - Step 1151 / 2442 loss=2.551726  samples=4604
+  Epoch 2 - Step 1201 / 2442 loss=2.958930  samples=4804
+  Epoch 2 - Step 1251 / 2442 loss=2.779224  samples=5004
+  Epoch 2 - Step 1301 / 2442 loss=2.296075  samples=5204
+  Epoch 2 - Step 1351 / 2442 loss=2.632879  samples=5404
+  Epoch 2 - Step 1401 / 2442 loss=2.671715  samples=5604
+  Epoch 2 - Step 1451 / 2442 loss=2.490717  samples=5804
+  Epoch 2 - Step 1501 / 2442 loss=2.447276  samples=6004
+  Epoch 2 - Step 1551 / 2442 loss=2.764439  samples=6204
+  Epoch 2 - Step 1601 / 2442 loss=2.576164  samples=6404
+  Epoch 2 - Step 1651 / 2442 loss=2.732055  samples=6604
+  Epoch 2 - Step 1701 / 2442 loss=2.830684  samples=6804
+  Epoch 2 - Step 1751 / 2442 loss=2.432413  samples=7004
+  Epoch 2 - Step 1801 / 2442 loss=2.904161  samples=7204
+  Epoch 2 - Step 1851 / 2442 loss=2.799075  samples=7404
+  Epoch 2 - Step 1901 / 2442 loss=2.854213  samples=7604
+  Epoch 2 - Step 1951 / 2442 loss=2.303910  samples=7804
+  Epoch 2 - Step 2001 / 2442 loss=2.262737  samples=8004
+  Epoch 2 - Step 2051 / 2442 loss=3.125327  samples=8204
+  Epoch 2 - Step 2101 / 2442 loss=2.758667  samples=8404
+  Epoch 2 - Step 2151 / 2442 loss=2.402244  samples=8604
+  Epoch 2 - Step 2201 / 2442 loss=2.827444  samples=8804
+  Epoch 2 - Step 2251 / 2442 loss=2.595865  samples=9004
+  Epoch 2 - Step 2301 / 2442 loss=2.703570  samples=9204
+  Epoch 2 - Step 2351 / 2442 loss=2.539652  samples=9404
+  Epoch 2 - Step 2401 / 2442 loss=2.687579  samples=9604
+  Epoch 2 - Step 2442 / 2442 loss=3.147193  samples=9767
+[New Best] BPP = 11.347028 at epoch 2
+Save PE at models/pixel_emb_b_stage1_best.pt
+Save Heading at models/HeadPixel_b_stage1_best.pt
+[IntraPos] Saved to models/INP_b_stage1_best.pt
+2026-03-18 17:43:30
+=== Epoch 2 完成 ===
+  Avg Train Loss : 2.699901
+  Current BPP    : 11.347028
+  Best BPP       : 11.347028 (epoch 2)
+
+=== Epoch 3 / 6 开始 ===
+  Epoch 3 - Step 1 / 2442 loss=2.378132  samples=4
+  Epoch 3 - Step 51 / 2442 loss=2.825131  samples=204
+  Epoch 3 - Step 101 / 2442 loss=2.774685  samples=404
+  Epoch 3 - Step 151 / 2442 loss=2.644592  samples=604
+  Epoch 3 - Step 201 / 2442 loss=2.733334  samples=804
+  Epoch 3 - Step 251 / 2442 loss=2.699972  samples=1004
+  Epoch 3 - Step 301 / 2442 loss=2.523644  samples=1204
+  Epoch 3 - Step 351 / 2442 loss=2.541228  samples=1404
+  Epoch 3 - Step 401 / 2442 loss=2.725002  samples=1604
+  Epoch 3 - Step 451 / 2442 loss=2.566209  samples=1804
+  Epoch 3 - Step 501 / 2442 loss=2.751492  samples=2004
+  Epoch 3 - Step 551 / 2442 loss=2.918658  samples=2204
+  Epoch 3 - Step 601 / 2442 loss=2.745454  samples=2404
+  Epoch 3 - Step 651 / 2442 loss=2.539692  samples=2604
+  Epoch 3 - Step 701 / 2442 loss=2.401114  samples=2804
+  Epoch 3 - Step 751 / 2442 loss=2.864128  samples=3004
+  Epoch 3 - Step 801 / 2442 loss=2.531185  samples=3204
+  Epoch 3 - Step 851 / 2442 loss=2.612533  samples=3404
+  Epoch 3 - Step 901 / 2442 loss=2.802113  samples=3604
+  Epoch 3 - Step 951 / 2442 loss=2.466022  samples=3804
+  Epoch 3 - Step 1001 / 2442 loss=1.941275  samples=4004
+  Epoch 3 - Step 1051 / 2442 loss=2.471960  samples=4204
+  Epoch 3 - Step 1101 / 2442 loss=2.668548  samples=4404
+  Epoch 3 - Step 1151 / 2442 loss=2.372154  samples=4604
+  Epoch 3 - Step 1201 / 2442 loss=3.010530  samples=4804
+  Epoch 3 - Step 1251 / 2442 loss=2.034603  samples=5004
+  Epoch 3 - Step 1301 / 2442 loss=2.225654  samples=5204
+  Epoch 3 - Step 1351 / 2442 loss=2.758012  samples=5404
+  Epoch 3 - Step 1401 / 2442 loss=2.864204  samples=5604
+  Epoch 3 - Step 1451 / 2442 loss=2.763034  samples=5804
+  Epoch 3 - Step 1501 / 2442 loss=2.780955  samples=6004
+  Epoch 3 - Step 1551 / 2442 loss=2.483287  samples=6204
+  Epoch 3 - Step 1601 / 2442 loss=2.233236  samples=6404
+  Epoch 3 - Step 1651 / 2442 loss=2.441531  samples=6604
+  Epoch 3 - Step 1701 / 2442 loss=2.730303  samples=6804
+  Epoch 3 - Step 1751 / 2442 loss=1.856493  samples=7004
+  Epoch 3 - Step 1801 / 2442 loss=2.733065  samples=7204
+  Epoch 3 - Step 1851 / 2442 loss=2.562479  samples=7404
+  Epoch 3 - Step 1901 / 2442 loss=2.687801  samples=7604
+  Epoch 3 - Step 1951 / 2442 loss=2.727197  samples=7804
+  Epoch 3 - Step 2001 / 2442 loss=2.690667  samples=8004
+  Epoch 3 - Step 2051 / 2442 loss=2.632828  samples=8204
+  Epoch 3 - Step 2101 / 2442 loss=2.620784  samples=8404
+  Epoch 3 - Step 2151 / 2442 loss=2.584312  samples=8604
+  Epoch 3 - Step 2201 / 2442 loss=2.805407  samples=8804
+  Epoch 3 - Step 2251 / 2442 loss=2.351403  samples=9004
+  Epoch 3 - Step 2301 / 2442 loss=2.724037  samples=9204
+  Epoch 3 - Step 2351 / 2442 loss=2.608370  samples=9404
+  Epoch 3 - Step 2401 / 2442 loss=2.406961  samples=9604
+  Epoch 3 - Step 2442 / 2442 loss=2.643715  samples=9767
+[New Best] BPP = 11.048866 at epoch 3
+Save PE at models/pixel_emb_b_stage1_best.pt
+Save Heading at models/HeadPixel_b_stage1_best.pt
+[IntraPos] Saved to models/INP_b_stage1_best.pt
+2026-03-18 17:55:59
+=== Epoch 3 完成 ===
+  Avg Train Loss : 2.615318
+  Current BPP    : 11.048866
+  Best BPP       : 11.048866 (epoch 3)
+
+=== Epoch 4 / 6 开始 ===
+  Epoch 4 - Step 1 / 2442 loss=2.559453  samples=4
+  Epoch 4 - Step 51 / 2442 loss=2.514657  samples=204
+  Epoch 4 - Step 101 / 2442 loss=2.271399  samples=404
+  Epoch 4 - Step 151 / 2442 loss=2.452653  samples=604
+  Epoch 4 - Step 201 / 2442 loss=2.407480  samples=804
+  Epoch 4 - Step 251 / 2442 loss=2.674639  samples=1004
+  Epoch 4 - Step 301 / 2442 loss=2.716620  samples=1204
+  Epoch 4 - Step 351 / 2442 loss=2.616276  samples=1404
+  Epoch 4 - Step 401 / 2442 loss=2.809950  samples=1604
+  Epoch 4 - Step 451 / 2442 loss=2.871464  samples=1804
+  Epoch 4 - Step 501 / 2442 loss=2.777563  samples=2004
+  Epoch 4 - Step 551 / 2442 loss=2.799256  samples=2204
+  Epoch 4 - Step 601 / 2442 loss=2.656134  samples=2404
+  Epoch 4 - Step 651 / 2442 loss=2.412523  samples=2604
+  Epoch 4 - Step 701 / 2442 loss=2.563365  samples=2804
+  Epoch 4 - Step 751 / 2442 loss=2.409661  samples=3004
+  Epoch 4 - Step 801 / 2442 loss=2.521451  samples=3204
+  Epoch 4 - Step 851 / 2442 loss=2.665267  samples=3404
+  Epoch 4 - Step 901 / 2442 loss=2.517156  samples=3604
+  Epoch 4 - Step 951 / 2442 loss=2.797984  samples=3804
+  Epoch 4 - Step 1001 / 2442 loss=2.835437  samples=4004
+  Epoch 4 - Step 1051 / 2442 loss=2.807894  samples=4204
+  Epoch 4 - Step 1101 / 2442 loss=2.251086  samples=4404
+  Epoch 4 - Step 1151 / 2442 loss=2.628728  samples=4604
+  Epoch 4 - Step 1201 / 2442 loss=2.470572  samples=4804
+  Epoch 4 - Step 1251 / 2442 loss=2.487499  samples=5004
+  Epoch 4 - Step 1301 / 2442 loss=2.171600  samples=5204
+  Epoch 4 - Step 1351 / 2442 loss=2.770939  samples=5404
+  Epoch 4 - Step 1401 / 2442 loss=2.735471  samples=5604
+  Epoch 4 - Step 1451 / 2442 loss=2.582991  samples=5804
+  Epoch 4 - Step 1501 / 2442 loss=2.492733  samples=6004
+  Epoch 4 - Step 1551 / 2442 loss=2.513037  samples=6204
+  Epoch 4 - Step 1601 / 2442 loss=2.666424  samples=6404
+  Epoch 4 - Step 1651 / 2442 loss=2.718545  samples=6604
+  Epoch 4 - Step 1701 / 2442 loss=2.638776  samples=6804
+  Epoch 4 - Step 1751 / 2442 loss=2.569874  samples=7004
+  Epoch 4 - Step 1801 / 2442 loss=2.922033  samples=7204
+  Epoch 4 - Step 1851 / 2442 loss=2.406082  samples=7404
+  Epoch 4 - Step 1901 / 2442 loss=2.859190  samples=7604
+  Epoch 4 - Step 1951 / 2442 loss=2.570675  samples=7804
+  Epoch 4 - Step 2001 / 2442 loss=2.733274  samples=8004
+  Epoch 4 - Step 2051 / 2442 loss=2.595221  samples=8204
+  Epoch 4 - Step 2101 / 2442 loss=2.803358  samples=8404
+  Epoch 4 - Step 2151 / 2442 loss=2.570496  samples=8604
+  Epoch 4 - Step 2201 / 2442 loss=2.827425  samples=8804
+  Epoch 4 - Step 2251 / 2442 loss=2.719814  samples=9004
+  Epoch 4 - Step 2301 / 2442 loss=2.681116  samples=9204
+  Epoch 4 - Step 2351 / 2442 loss=2.708572  samples=9404
+  Epoch 4 - Step 2401 / 2442 loss=2.444789  samples=9604
+  Epoch 4 - Step 2442 / 2442 loss=2.755864  samples=9767
+[New Best] BPP = 10.811821 at epoch 4
+Save PE at models/pixel_emb_b_stage1_best.pt
+Save Heading at models/HeadPixel_b_stage1_best.pt
+[IntraPos] Saved to models/INP_b_stage1_best.pt
+2026-03-18 18:08:07
+=== Epoch 4 完成 ===
+  Avg Train Loss : 2.555570
+  Current BPP    : 10.811821
+  Best BPP       : 10.811821 (epoch 4)
+
+=== Epoch 5 / 6 开始 ===
+  Epoch 5 - Step 1 / 2442 loss=2.719022  samples=4
+  Epoch 5 - Step 51 / 2442 loss=2.740815  samples=204
+  Epoch 5 - Step 101 / 2442 loss=2.455350  samples=404
+  Epoch 5 - Step 151 / 2442 loss=2.429051  samples=604
+  Epoch 5 - Step 201 / 2442 loss=2.709774  samples=804
+  Epoch 5 - Step 251 / 2442 loss=2.638503  samples=1004
+  Epoch 5 - Step 301 / 2442 loss=2.659519  samples=1204
+  Epoch 5 - Step 351 / 2442 loss=2.406934  samples=1404
+  Epoch 5 - Step 401 / 2442 loss=2.537304  samples=1604
+  Epoch 5 - Step 451 / 2442 loss=2.541215  samples=1804
+  Epoch 5 - Step 501 / 2442 loss=1.997509  samples=2004
+  Epoch 5 - Step 551 / 2442 loss=2.721117  samples=2204
+  Epoch 5 - Step 601 / 2442 loss=2.538521  samples=2404
+  Epoch 5 - Step 651 / 2442 loss=2.029564  samples=2604
+  Epoch 5 - Step 701 / 2442 loss=2.594648  samples=2804
+  Epoch 5 - Step 751 / 2442 loss=2.652198  samples=3004
+  Epoch 5 - Step 801 / 2442 loss=2.449277  samples=3204
+  Epoch 5 - Step 851 / 2442 loss=2.676469  samples=3404
+  Epoch 5 - Step 901 / 2442 loss=2.438416  samples=3604
+  Epoch 5 - Step 951 / 2442 loss=2.203203  samples=3804
+  Epoch 5 - Step 1001 / 2442 loss=2.521480  samples=4004
+  Epoch 5 - Step 1051 / 2442 loss=2.229877  samples=4204
+  Epoch 5 - Step 1101 / 2442 loss=2.623441  samples=4404
+  Epoch 5 - Step 1151 / 2442 loss=2.408434  samples=4604
+  Epoch 5 - Step 1201 / 2442 loss=2.565426  samples=4804
+  Epoch 5 - Step 1251 / 2442 loss=2.793242  samples=5004
+  Epoch 5 - Step 1301 / 2442 loss=2.757897  samples=5204
+  Epoch 5 - Step 1351 / 2442 loss=2.435104  samples=5404
+  Epoch 5 - Step 1401 / 2442 loss=2.322760  samples=5604
+  Epoch 5 - Step 1451 / 2442 loss=2.741888  samples=5804
+  Epoch 5 - Step 1501 / 2442 loss=2.249512  samples=6004
+  Epoch 5 - Step 1551 / 2442 loss=2.585742  samples=6204
+  Epoch 5 - Step 1601 / 2442 loss=2.600128  samples=6404
+  Epoch 5 - Step 1651 / 2442 loss=2.336710  samples=6604
+  Epoch 5 - Step 1701 / 2442 loss=2.400428  samples=6804
+  Epoch 5 - Step 1751 / 2442 loss=2.646467  samples=7004
+  Epoch 5 - Step 1801 / 2442 loss=2.343828  samples=7204
+  Epoch 5 - Step 1851 / 2442 loss=2.420899  samples=7404
+  Epoch 5 - Step 1901 / 2442 loss=2.570786  samples=7604
+  Epoch 5 - Step 1951 / 2442 loss=2.288872  samples=7804
+  Epoch 5 - Step 2001 / 2442 loss=2.488862  samples=8004
+  Epoch 5 - Step 2051 / 2442 loss=1.703725  samples=8204
+  Epoch 5 - Step 2101 / 2442 loss=2.616456  samples=8404
+  Epoch 5 - Step 2151 / 2442 loss=2.812024  samples=8604
+  Epoch 5 - Step 2201 / 2442 loss=2.542849  samples=8804
+  Epoch 5 - Step 2251 / 2442 loss=2.523401  samples=9004
+  Epoch 5 - Step 2301 / 2442 loss=2.438309  samples=9204
+  Epoch 5 - Step 2351 / 2442 loss=2.853421  samples=9404
+  Epoch 5 - Step 2401 / 2442 loss=2.237658  samples=9604
+  Epoch 5 - Step 2442 / 2442 loss=2.718299  samples=9767
+[New Best] BPP = 10.598289 at epoch 5
+Save PE at models/pixel_emb_b_stage1_best.pt
+Save Heading at models/HeadPixel_b_stage1_best.pt
+[IntraPos] Saved to models/INP_b_stage1_best.pt
+2026-03-18 18:20:06
+=== Epoch 5 完成 ===
+  Avg Train Loss : 2.502877
+  Current BPP    : 10.598289
+  Best BPP       : 10.598289 (epoch 5)
+
+=== Epoch 6 / 6 开始 ===
+  Epoch 6 - Step 1 / 2442 loss=2.314021  samples=4
+  Epoch 6 - Step 51 / 2442 loss=2.500992  samples=204
+  Epoch 6 - Step 101 / 2442 loss=2.482366  samples=404
+  Epoch 6 - Step 151 / 2442 loss=2.412046  samples=604
+  Epoch 6 - Step 201 / 2442 loss=2.534558  samples=804
+  Epoch 6 - Step 251 / 2442 loss=2.648234  samples=1004
+  Epoch 6 - Step 301 / 2442 loss=2.540008  samples=1204
+  Epoch 6 - Step 351 / 2442 loss=2.645832  samples=1404
+  Epoch 6 - Step 401 / 2442 loss=2.362772  samples=1604
+  Epoch 6 - Step 451 / 2442 loss=2.644521  samples=1804
+  Epoch 6 - Step 501 / 2442 loss=2.127600  samples=2004
+  Epoch 6 - Step 551 / 2442 loss=2.013108  samples=2204
+  Epoch 6 - Step 601 / 2442 loss=2.436721  samples=2404
+  Epoch 6 - Step 651 / 2442 loss=2.628128  samples=2604
+  Epoch 6 - Step 701 / 2442 loss=2.404662  samples=2804
+  Epoch 6 - Step 751 / 2442 loss=1.915685  samples=3004
+  Epoch 6 - Step 801 / 2442 loss=2.475814  samples=3204
+  Epoch 6 - Step 851 / 2442 loss=2.439151  samples=3404
+  Epoch 6 - Step 901 / 2442 loss=2.402889  samples=3604
+  Epoch 6 - Step 951 / 2442 loss=2.574638  samples=3804
+  Epoch 6 - Step 1001 / 2442 loss=2.470181  samples=4004
+  Epoch 6 - Step 1051 / 2442 loss=2.641799  samples=4204
+  Epoch 6 - Step 1101 / 2442 loss=2.623243  samples=4404
+  Epoch 6 - Step 1151 / 2442 loss=2.448108  samples=4604
+  Epoch 6 - Step 1201 / 2442 loss=2.591675  samples=4804
+  Epoch 6 - Step 1251 / 2442 loss=2.759909  samples=5004
+  Epoch 6 - Step 1301 / 2442 loss=2.603001  samples=5204
+  Epoch 6 - Step 1351 / 2442 loss=2.619090  samples=5404
+  Epoch 6 - Step 1401 / 2442 loss=2.635950  samples=5604
+  Epoch 6 - Step 1451 / 2442 loss=2.640985  samples=5804
+  Epoch 6 - Step 1501 / 2442 loss=2.525688  samples=6004
+  Epoch 6 - Step 1551 / 2442 loss=2.624392  samples=6204
+  Epoch 6 - Step 1601 / 2442 loss=2.637187  samples=6404
+  Epoch 6 - Step 1651 / 2442 loss=2.308942  samples=6604
+  Epoch 6 - Step 1701 / 2442 loss=2.452136  samples=6804
+  Epoch 6 - Step 1751 / 2442 loss=2.322261  samples=7004
+  Epoch 6 - Step 1801 / 2442 loss=2.386694  samples=7204
+  Epoch 6 - Step 1851 / 2442 loss=1.916848  samples=7404
+  Epoch 6 - Step 1901 / 2442 loss=2.683775  samples=7604
+  Epoch 6 - Step 1951 / 2442 loss=2.519322  samples=7804
+  Epoch 6 - Step 2001 / 2442 loss=2.596538  samples=8004
+  Epoch 6 - Step 2051 / 2442 loss=2.565176  samples=8204
+  Epoch 6 - Step 2101 / 2442 loss=2.467326  samples=8404
+  Epoch 6 - Step 2151 / 2442 loss=2.500323  samples=8604
+  Epoch 6 - Step 2201 / 2442 loss=2.380313  samples=8804
+  Epoch 6 - Step 2251 / 2442 loss=2.560192  samples=9004
+  Epoch 6 - Step 2301 / 2442 loss=2.927420  samples=9204
+  Epoch 6 - Step 2351 / 2442 loss=2.725637  samples=9404
+  Epoch 6 - Step 2401 / 2442 loss=2.411247  samples=9604
+  Epoch 6 - Step 2442 / 2442 loss=2.247383  samples=9767
+2026-03-18 18:32:07
+=== Epoch 6 完成 ===
+  Avg Train Loss : 2.479292
+  Current BPP    : 10.676954
+  Best BPP       : 10.598289 (epoch 5)
+Saved prefix checkpoint to models/SP_qwen-k-0318_stage1.pt
+Save PE at models/pixel_emb_qwen-k-0318_stage1.pt
+Save Heading at models/HeadPixel_qwen-k-0318_stage1.pt
+[IntraPos] Saved to models/INP_qwen-k-0318_stage1.pt
+Train Stage 1 complete!
+Train complete, model id : /home/vipuser/Model/QWEN_2.5_0.5B

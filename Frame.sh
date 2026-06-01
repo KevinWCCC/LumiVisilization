@@ -8,10 +8,13 @@
     #   在这里填写你要执行的命令
     # ======================
     declare -a COMMANDS=(
-        "python test2.py --jsonl data/kodak_p16_1-1.jsonl \
-            --idx 0 \
-            --pixel_emb_ckpt ./pixel.pt \
-            --save results/tsne_pe_comparison.pdf"
+        "python bpp_test_0319.py --mode curve \
+            --logs ./logs/log_train_pixel_b_qwen-k-0318_stage1_0318_1717.log \
+            --out bpp_kodak_stage1.png"
+        # "python test2.py --jsonl data/kodak_p16_1-1.jsonl \
+        #     --idx 0 \
+        #     --pixel_emb_ckpt ./pixel.pt \
+        #     --save results/tsne_pe_comparison.pdf"
         "python --version"
         "python -m pip --version"
     )

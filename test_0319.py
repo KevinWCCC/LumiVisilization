@@ -13,6 +13,7 @@ import utils
 import data_loader
 from data_loader import PixelJsonlDataset
 
+modelNamePt = "llama-k-0319"
 
 def plot_tsne(X: np.ndarray, colors: np.ndarray, title: str, save_path: str):
     tsne = TSNE(n_components=2, perplexity=30, random_state=42, n_iter=1000)
@@ -43,6 +44,11 @@ def main():
     device = args.device
     print("🚀 开始加载模型与组件...")
 
+    pixel_emb = PixelInputEmbedding.load(f"./models/pixel_emb_{modelNamePt}_stage1.pt", device=device)
+    readout_head = NumericReadoutHead.load(f"./models/HeadPixel_{modelNamePt}_stage1.pt", device=device)
+    inp_path = f"./models/INP_{modelNamePt}_stage1.pt"
+    sp_path = f"./models/SP_{modelNamePt}_stage1.pt"
+
     # 1. LLM
     tokenizer, model = utils.load_llm_model(args.model_id, "", device)
     model.eval()
@@ -51,17 +57,13 @@ def main():
     H = model.config.hidden_size
 
     # 2. 加载四个组件（自动使用你训练时保存的最佳 ckpt）
-    pixel_emb = PixelInputEmbedding.load(f"models/pixel_emb_{args.dataset}_stage1_best.pt", device=device)
-    readout_head = NumericReadoutHead.load(f"models/HeadPixel_{args.dataset}_stage1_best.pt", device=device)
 
     intra_pos = None
-    inp_path = f"models/INP_{args.dataset}_stage1_best.pt"
     if Path(inp_path).exists():
         intra_pos = load_intra_pos(inp_path, model, device)
         print(f"✅ Loaded INP from {inp_path}")
 
     prefix_tau = None
-    sp_path = f"models/SP_{args.dataset}_stage2_best.pt"
     if Path(sp_path).exists():
         prefix_tau, _ = load_prefix(sp_path, device=device, model=model)
         print(f"✅ Loaded Soft Prefix from {sp_path}")
