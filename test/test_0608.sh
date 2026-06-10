@@ -8,7 +8,11 @@
 
 #   --perplexity 30 \
 
-python viz_pixel_embedding_demo.py \
+python vis_0608.py
+
+exit
+
+# python viz_pixel_embedding_demo.py \
 #   --model_id /home/vipuser/Model/LLAMA_3.1_B \
 #   --pixel_emb_ckpt model/pixel_emb_k_stage1.pt\
 #   --output tsne_ascii_vs_pixel.png \
