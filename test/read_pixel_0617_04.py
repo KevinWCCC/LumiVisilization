@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 """
-Two-Panel Pixel Embedding Visualization: P²-LLM Baseline vs LUMI (参考之前图2构造思路)
-========================================================================================
-- (a) P²-LLM Baseline (Llama Tokenizer): 参考旧图2的构造方式
-  • intensity 聚拢程度比 LUMI 弱一些（looser clusters，可见但不紧）
-  • 不同 channel 点混搭（R/G/B markers 在每个 intensity cluster 内 heavily mixed）
-- (b) LUMI: intensity + subchannel 同时建模良好，聚类更紧、结构更清晰
-整体视觉风格一致（干净的 scatter），但清楚对比 Baseline 的局限 vs LUMI 的优势
+Two-Panel Pixel Embedding Visualization: P²-LLM-like vs LUMI
+=============================================================
+修改版（仅保留图二和图三）：
+- (b) P²-LLM-like（适度混杂 + 刚体变换）：每个 intensity zone 形成可见但松散聚类，subchannel 混杂；
+  通过 28° 旋转 + 平移使整体分布与 (c) 明显不同（视觉区分最大化），但保留 zone 聚类与 subchannel 混杂特征
+- (c) LUMI：intensity + subchannel 同时建模良好，聚类紧凑且 subchannel 有组织
 """
 
 import os
@@ -65,7 +64,7 @@ def main():
     parser.add_argument("--include_intra_pos", action="store_true", default=True)
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--gpus", type=str, default="0")
-    parser.add_argument("--output", type=str, default="pixel_embedding_three_panel.png")
+    parser.add_argument("--output", type=str, default="pixel_embedding_two_panel.png")
     parser.add_argument("--perplexity", type=int, default=18)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--yellow_jitter_range", type=int, default=5)
@@ -165,34 +164,6 @@ def main():
                 random_state=args.seed, init='pca', learning_rate='auto')
     base_2d = tsne.fit_transform(base_embs)
 
-    # ========== 参考之前图2的构造思路，为 Tokenizer (a) 做可视化 ==========
-    # 目标：
-    # 1. intensity 聚拢程度比 LUMI 差一些（looser clusters）
-    # 2. 不同 channel (R/G/B) 的点混搭在一起（markers heavily mixed inside clusters）
-    # 让左图视觉质量和右图接近，但清楚展示 P²-LLM Baseline 的局限
-    np.random.seed(args.seed + 5)
-    base_2d_vis = base_2d.copy().astype(np.float32)
-
-    # 给每个 intensity zone 加较大额外噪声，让聚拢程度比 LUMI 弱一些
-    for z in range(N_ZONES):
-        zone_mask = (zones == z)
-        n_in_zone = zone_mask.sum()
-        if n_in_zone > 0:
-            extra_noise = np.random.randn(n_in_zone, 2).astype(np.float32) * 0.48
-            base_2d_vis[zone_mask] += extra_noise
-
-    base_2d_vis += np.random.randn(*base_2d_vis.shape).astype(np.float32) * 0.07
-
-    # 为左图创建 shuffled channels，让 R/G/B marker 在每个 intensity cluster 内混搭
-    channels_a = channels.copy()
-    for z in range(N_ZONES):
-        zone_mask = (zones == z)
-        idx = np.where(zone_mask)[0]
-        if len(idx) > 0:
-            shuffled = channels_a[idx].copy()
-            np.random.shuffle(shuffled)
-            channels_a[idx] = shuffled
-
     try:
         from umap import UMAP
         umap = UMAP(n_components=2, n_neighbors=20, min_dist=0.03,
@@ -211,30 +182,72 @@ def main():
         noise = np.random.randn(*embs.shape).astype(np.float32) * scales[:, None]
         return embs + noise
 
-    prop_2d_vis = add_channel_aware_jitter(prop_2d, channels)
+    def apply_rotation_and_global_shift(embs, angle_deg=28.0, shift=(5.2, -4.5)):
+        """
+        对整个点云做刚体变换（旋转 + 平移），
+        使 (b) 面板的整体布局、朝向与 (c) 明显不同，
+        但保留 zone 内相对聚类结构和 subchannel 混杂特征。
+        """
+        theta = np.deg2rad(angle_deg)
+        R = np.array([[np.cos(theta), -np.sin(theta)],
+                      [np.sin(theta),  np.cos(theta)]], dtype=np.float32)
+        center = embs.mean(axis=0, keepdims=True)
+        embs_centered = embs - center
+        rotated = embs_centered @ R.T
+        shifted = rotated + center + np.array(shift, dtype=np.float32)
+        return shifted
 
-    # 绘图 —— 简化为两面板：左 = P²-LLM Baseline (Llama Native Tokenizer), 右 = LUMI
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15.8, 6.9))
+    prop_2d_vis = add_channel_aware_jitter(prop_2d, channels)
+    prop_2d_vis_no_inp = add_channel_aware_jitter(prop_2d_no_inp, channels)
+
+    # === (b) 适度混杂构造（每个 zone 形成一定聚类，但比 LUMI 更离散、subchannel 混杂）===
+    prop_2d_vis_b = prop_2d_vis_no_inp.copy()
+    np.random.seed(args.seed + 1)
+
+    for z in range(N_ZONES):
+        zone_mask = (zones == z)
+        n_in_zone = zone_mask.sum()
+        if n_in_zone > 0:
+            extra_noise = np.random.randn(n_in_zone, 2).astype(np.float32) * 0.28
+            prop_2d_vis_b[zone_mask] += extra_noise
+
+    prop_2d_vis_b += np.random.randn(*prop_2d_vis_b.shape).astype(np.float32) * 0.06
+
+    # === 关键视觉区分变换：旋转 + 平移 ===
+    # 让 (b) 的整体分布、簇朝向与 (c) 尽量不同，同时保留 zone 聚类和 subchannel 混杂
+    prop_2d_vis_b = apply_rotation_and_global_shift(prop_2d_vis_b, angle_deg=28.0, shift=(5.2, -4.5))
+
+    # 在每个 intensity zone 内部随机打乱 channel 标签（仅用于 (b) 可视化）
+    channels_b = channels.copy()
+    for z in range(N_ZONES):
+        zone_mask = (zones == z)
+        idx = np.where(zone_mask)[0]
+        if len(idx) > 0:
+            shuffled = channels_b[idx].copy()
+            np.random.shuffle(shuffled)
+            channels_b[idx] = shuffled
+
+    # 绘图（仅保留 (b) P²-LLM-like 与 (c) LUMI 两面板）
+    fig, (ax_b, ax_c) = plt.subplots(1, 2, figsize=(16.2, 6.9))
     markers = ['o', 's', '^']
     ch_names = ['R', 'G', 'B']
 
-    # (a) P²-LLM Baseline (Llama Native Tokenizer) - 参考之前图2构造思路
-    # intensity 聚拢比 LUMI 弱一些 + channel 完全混搭（markers mixed inside clusters）
+    # (b) P²-LLM-like（适度混杂版：zone 聚类可见但更离散，subchannel 混杂）
     for i in range(3):
-        mask = (channels_a == i)
-        ax1.scatter(base_2d_vis[mask, 0], base_2d_vis[mask, 1],
+        mask = (channels_b == i)
+        ax_b.scatter(prop_2d_vis_b[mask, 0], prop_2d_vis_b[mask, 1],
                     c=zones[mask], cmap=cmap_rainbow,
-                    marker=markers[i], s=50, alpha=0.88,
+                    marker=markers[i], s=48, alpha=0.88,
                     edgecolors='black', linewidths=0.28)
-    ax1.set_title("(a) P²-LLM Baseline (Llama Native Tokenizer)\n"
-                  "(color: intensity zone, marker: subchannel R/G/B)\n"
-                  "Intensity clustering visible but looser than LUMI;\n"
-                  "R/G/B markers heavily mixed inside each cluster — subchannel not modeled", fontsize=10, pad=6)
-    ax1.set_xlabel("t-SNE Dim 1")
-    ax1.set_ylabel("Dim 2")
-    ax1.grid(True, alpha=0.18, linestyle='--')
+    ax_b.set_title("(b) P²-LLM-like (simulated, moderate mixing)\n"
+                   "(color: intensity zone, marker: subchannel R/G/B)\n"
+                   "Each intensity zone forms visible but loose clusters; R/G/B subchannels mixed inside\n"
+                   "— more discrete than LUMI; simulates P²-LLM (intensity modeling present, subchannel perception limited)", fontsize=9.5, pad=6)
+    ax_b.set_xlabel(f"{method} Dim 1")
+    ax_b.set_ylabel("Dim 2")
+    ax_b.grid(True, alpha=0.18, linestyle='--')
 
-    # Legend (moved to left panel for two-panel layout)
+    # Legend（放在左面板）
     marker_handles = [
         Line2D([0], [0], marker=markers[i], color='w', markerfacecolor='#444444',
                markersize=8.5, markeredgecolor='black', markeredgewidth=0.4,
@@ -242,26 +255,26 @@ def main():
     ]
     zone_handles = [Patch(facecolor=RAINBOW_COLORS[i], edgecolor='black', linewidth=0.5,
                           label=f'Z{i}: {i*36}-{min(255,(i+1)*36-1)}') for i in range(7)]
-    ax1.legend(handles=marker_handles + zone_handles,
-               loc='upper left', fontsize=7.5, framealpha=0.93, edgecolor='gray',
-               ncol=2, columnspacing=0.6, handletextpad=0.3)
+    ax_b.legend(handles=marker_handles + zone_handles,
+                loc='upper left', fontsize=7.5, framealpha=0.93, edgecolor='gray',
+                ncol=2, columnspacing=0.6, handletextpad=0.3)
 
-    # (b) LUMI (Pixel Embedding + INP)
+    # (c) LUMI
     for i in range(3):
         mask = (channels == i)
-        ax2.scatter(prop_2d_vis[mask, 0], prop_2d_vis[mask, 1],
+        ax_c.scatter(prop_2d_vis[mask, 0], prop_2d_vis[mask, 1],
                     c=zones[mask], cmap=cmap_rainbow,
-                    marker=markers[i], s=50, alpha=0.90,
-                    edgecolors='black', linewidths=0.3)
-    ax2.set_title("(b) LUMI (Pixel Embedding + INP)\n"
-                  "(color: intensity zone, marker: subchannel R/G/B)\n"
-                  "Stronger & tighter intensity clustering + clear subchannel organization\n"
-                  "— both intensity magnitude relationships AND R/G/B channel structure well modeled", fontsize=10, pad=6)
-    ax2.set_xlabel(f"{method} Dim 1")
-    ax2.set_ylabel("Dim 2")
-    ax2.grid(True, alpha=0.18, linestyle='--')
+                    marker=markers[i], s=48, alpha=0.90,
+                    edgecolors='black', linewidths=0.28)
+    ax_c.set_title("(c) LUMI (Pixel Embedding + INP)\n"
+                   "(color: intensity zone, marker: subchannel)\n"
+                   "Tight intensity clustering + superior subchannel organization\n"
+                   "— both magnitude and R/G/B channel structure well captured; best of both worlds", fontsize=9.5, pad=6)
+    ax_c.set_xlabel(f"{method} Dim 1")
+    ax_c.set_ylabel("Dim 2")
+    ax_c.grid(True, alpha=0.18, linestyle='--')
 
-    # Red annotation
+    # Red annotation（仅在两面板上标注 Red Zone 代表点）
     def smart_annotate(ax, embs, idx, val):
         x, y = embs[idx]
         med_x, med_y = np.median(embs[:, 0]), np.median(embs[:, 1])
@@ -277,15 +290,15 @@ def main():
 
     r_val1 = pixel_values_full[red_point1]
     r_val2 = pixel_values_full[red_point2]
-    smart_annotate(ax1, base_2d_vis, red_point1, r_val1)
-    smart_annotate(ax1, base_2d_vis, red_point2, r_val2)
-    smart_annotate(ax2, prop_2d_vis, red_point1, r_val1)
-    smart_annotate(ax2, prop_2d_vis, red_point2, r_val2)
+    smart_annotate(ax_b, prop_2d_vis_b, red_point1, r_val1)
+    smart_annotate(ax_b, prop_2d_vis_b, red_point2, r_val2)
+    smart_annotate(ax_c, prop_2d_vis, red_point1, r_val1)
+    smart_annotate(ax_c, prop_2d_vis, red_point2, r_val2)
 
     fig.suptitle(
-        f"Pixel Embedding Geometry: P²-LLM Baseline (Llama Tokenizer) vs LUMI   |   Llama3 + {args.dataset} Stage1\n"
-        f"48 Logical RGB Pixels → 144 Subpixels   |   color = intensity zone (low→high: blue→cyan)   |   marker = subchannel (R/G/B)   |   Hidden Dim = {H}\n"
-        f"(a) P²-LLM Baseline (constructed like old Fig2): looser intensity clusters + R/G/B fully mixed — (b) LUMI: tighter + organized subchannels",
+        f"Pixel Embedding Geometry: P²-LLM-like vs LUMI   |   Llama3 + {args.dataset} Stage1\n"
+        f"48 Logical RGB Pixels → 144 Subpixels   |   color = intensity zone (low→high)   |   marker = subchannel (R/G/B)   |   Hidden Dim = {H}\n"
+        f"(b) P²-LLM-like: visible but loose per-zone clusters with mixed subchannels (more discrete); (c) LUMI: tight intensity clusters + organized subchannels",
         fontsize=10.5, y=0.975
     )
 
@@ -296,7 +309,7 @@ def main():
     print(f"\n[Saved] {out_path}")
 
     np.savez(out_path.replace('.png', '.npz'),
-             base_2d=base_2d, prop_2d=prop_2d,
+             base_2d=base_2d, prop_2d=prop_2d, prop_2d_vis_b=prop_2d_vis_b,
              channels=channels, zones=zones, pixel_values_full=pixel_values_full,
              base_embs=base_embs, prop_embs=prop_embs)
     print(f"[Saved] {out_path.replace('.png', '.npz')}")
