@@ -35,7 +35,7 @@
 #     --no_annotation\
 #     --output pixel_embedding_three_panel_lumi_vs_p2llm_0622_no_anno.png
 
-python test_0625.py\
+python test_0701.py\
     --model_id /home/vipuser/Model/LLAMA_3.1_B \
     --dataset koadk \
     --ckpt_dir models \
