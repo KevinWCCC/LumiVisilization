@@ -1,0 +1,9 @@
+template: 'Every three values denote a RGB pixel of a flatten {domain} image depicting \"{caption}\", predict the next RGB pixel based on previous pixels.Completion:'
+template_splitor: '.Completion:'
+with_caption: 'short_caption'
+domain: ''
+color_space: 'rgb'
+scan: 'raster'
+ph: 16
+pw: 16
+include_coords: false

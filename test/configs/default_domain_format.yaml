@@ -1,0 +1,9 @@
+template: 'Every three values denote a RGB pixel of a flatten {domain} image, predict the next RGB pixel based on previous pixels.Completion:'
+template_splitor: '.Completion:'
+with_caption: '' #默认不使用, long_catpion, short_caption
+domain: ''
+color_space: 'rgb'
+scan: 'raster'
+ph: 16 #只有当 scan 不是默认的 raster 的时候才会使用
+pw: 16
+include_coords: false
