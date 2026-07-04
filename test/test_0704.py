@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 """
-Final Version - Unified Single Annotation Box on Both Plots
-===========================================================
-- Left (b): One annotation box + two arrows (Baseline confusion)
-- Right (c): One annotation box + two arrows (LUMI disentanglement)
-- Both subplot panels rendered as true squares
-- No jitter on LUMI
-- Outlier removal applied to both plots
+Improved Publication-Quality Version of pixel_embedding figure
+==============================================================
+Key improvements for higher-end / NeurIPS-CVPR style:
+
+1. Shortened panel titles (detailed explanation → Figure Caption)
+2. Increased marker size (PIXEL_SIZE=48) with adjusted alpha for better visibility
+3. Highlighted annotation points (R=152 / B=153) stand out clearly in BOTH panels
+4. Right plot now uses ONE combined annotation box (with two arrows) + new text:
+   "Different channels are explicitly disentangled."
+5. More elegant, thinner annotations with professional styling
+6. Better perceptually-uniform colormap (plasma)
+7. Cleaner overall style + professional rcParams
+
+Usage remains the same as before. You only need to change the output filename
+and optionally tweak a few parameters below (PIXEL_SIZE, ALPHA_LEFT, etc.).
 """
 
 import os
@@ -32,13 +40,38 @@ except ImportError as e:
     print(f"[Error] Cannot import project modules: {e}")
     raise
 
+# ====================== Professional Style Settings ======================
 if sns is not None:
-    sns.set_style("whitegrid")
-plt.rcParams['figure.dpi'] = 150
-plt.rcParams['savefig.dpi'] = 300
-plt.rcParams['font.size'] = 12
+    sns.set_style("white")          # cleaner than whitegrid for t-SNE
+plt.rcParams.update({
+    'figure.dpi': 150,
+    'savefig.dpi': 300,
+    'font.family': 'sans-serif',
+    'font.sans-serif': ['DejaVu Sans', 'Arial', 'Helvetica'],
+    'axes.labelsize': 11,
+    'xtick.labelsize': 9.5,
+    'ytick.labelsize': 9.5,
+    'axes.linewidth': 0.8,
+    'axes.spines.top': False,
+    'axes.spines.right': False,
+    'legend.fontsize': 8.5,
+    'legend.framealpha': 0.95,
+})
 
-PIXEL_SIZE = 80
+# ====================== Tunable Visualization Parameters ======================
+PIXEL_SIZE = 80         # increased from 36 for better visibility (good balance between clarity and overlap)
+ALPHA_LEFT = 0.58        # slightly lower to compensate for larger markers
+ALPHA_RIGHT = 0.75
+HIGHLIGHT_SIZE = 78      # size for the two special points (R=152, B=153)
+HIGHLIGHT_LW = 0.95      # edge width for highlighted points
+
+# Professional sequential colormap (perceptually uniform, looks premium in papers)
+CMAP_ZONES = plt.cm.plasma
+
+# Alternative nice options (uncomment if you prefer):
+# CMAP_ZONES = plt.cm.viridis
+# CMAP_ZONES = plt.cm.magma
+# CMAP_ZONES = sns.color_palette("rocket", as_cmap=True)   # requires seaborn
 
 def get_text_tokenizer_embedding(pixel_values, tokenizer, emb, device):
     all_embs = []
@@ -53,6 +86,7 @@ def get_text_tokenizer_embedding(pixel_values, tokenizer, emb, device):
         all_embs.append(aggregated)
     return torch.stack(all_embs, dim=0)
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model_id", type=str, default="/home/vipuser/Model/LLAMA_3.1_B")
@@ -62,7 +96,7 @@ def main():
     parser.add_argument("--include_intra_pos", action="store_true", default=True)
     parser.add_argument("--device", type=str, default="cuda")
     parser.add_argument("--gpus", type=str, default="0")
-    parser.add_argument("--output", type=str, default="pixel_embedding_final_square.png")
+    parser.add_argument("--output", type=str, default="pixel_embedding_improved.png")
     parser.add_argument("--perplexity", type=int, default=18)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--yellow_jitter_range", type=int, default=5)
@@ -94,7 +128,7 @@ def main():
         if os.path.exists(inp_path):
             intra_pos = load_intra_pos(inp_path, model, args.device)
 
-    # Data generation
+    # ====================== Data Generation ======================
     print("[3/5] Generating data ...")
     N_ZONES = 7
     N_LOGICAL = 48
@@ -126,9 +160,6 @@ def main():
     zones = np.repeat(logical_zones, 3)
     logical_ids = np.arange(N_SUB) // 3
 
-    RAINBOW_COLORS = ['#5A587A', '#566C91', '#4F8394', '#5A9A91', '#82AE8C', '#A8BC87', '#C6C98D']
-    cmap_rainbow = ListedColormap(RAINBOW_COLORS)
-
     print("[4/5] Extracting embeddings ...")
     with torch.no_grad():
         base_embs = get_text_tokenizer_embedding(pixel_values_full, tokenizer, emb, args.device).float().cpu().numpy()
@@ -137,7 +168,7 @@ def main():
             prop_embs = prop_embs + intra_pos(torch.arange(N_SUB, device=args.device))
         prop_embs = prop_embs.float().cpu().numpy()
 
-    # t-SNE / UMAP
+    # ====================== Dimensionality Reduction ======================
     print("[5/5] Dimensionality reduction ...")
     tsne = TSNE(n_components=2, perplexity=args.perplexity, max_iter=2500,
                 random_state=args.seed, init='pca', learning_rate='auto')
@@ -146,14 +177,14 @@ def main():
     try:
         from umap import UMAP
         prop_2d = UMAP(n_components=2, n_neighbors=20, min_dist=0.03, metric='cosine', random_state=args.seed).fit_transform(prop_embs)
-        method = "UMAP"
+        method_right = "UMAP"
     except ImportError:
         prop_2d = tsne.fit_transform(prop_embs)
-        method = "t-SNE"
+        method_right = "t-SNE"
 
-    prop_2d_vis = prop_2d.copy()   # No jitter on LUMI
+    prop_2d_vis = prop_2d.copy()
 
-    # Annotation pair selection
+    # ====================== Annotation Pair Selection ======================
     print("[Annotation] Searching for similar intensity pair ...")
     z4_mask = (zones == 4)
     z4_indices = np.where(z4_mask)[0]
@@ -197,7 +228,7 @@ def main():
         anno_point2 = z4_indices[3] if len(z4_indices) > 3 else z4_indices[1]
         print("[Annotation] Warning: fallback pair used; no non-identical pair was available")
 
-    # Outlier removal (applied to both plots)
+    # ====================== Outlier Removal ======================
     print("[Outlier] Detecting outliers ...")
 
     def detect_mild_outliers(embs_2d, zones, logical_ids, threshold=3.8):
@@ -228,57 +259,79 @@ def main():
     else:
         print("[Outlier] No outliers removed.")
 
-    # ========== Plotting with square subplot panels ==========
-    # Keep each subplot's plotting area physically square, regardless of titles/legend.
-    fig, (ax_b, ax_c) = plt.subplots(1, 2, figsize=(14.2, 7.1))
+    # ====================== Plotting ======================
+    fig, (ax_b, ax_c) = plt.subplots(1, 2, figsize=(13.8, 6.9))
     for ax in (ax_b, ax_c):
         ax.set_box_aspect(1)
 
     markers = ['o', 's', '^']
     ch_names = ['R', 'G', 'B']
 
-    # Left: Text Tokenizer Baseline
+    # ---------- Left: Baseline (Text Tokenizer) ----------
     for i in range(3):
         mask = (channels == i) & keep_mask
         if mask.sum() == 0:
             continue
         ax_b.scatter(base_2d[mask, 0], base_2d[mask, 1],
-                    c=zones[mask], cmap=cmap_rainbow,
-                    marker=markers[i], s=PIXEL_SIZE, alpha=0.85,
-                    edgecolors='black', linewidths=0.3)
+                     c=zones[mask], cmap=CMAP_ZONES,
+                     marker=markers[i], s=PIXEL_SIZE, alpha=ALPHA_LEFT,
+                     edgecolors='none', zorder=3)
 
-    ax_b.set_title("(b) Baseline — Text Tokenizer\n",
-                   fontsize=10.5, pad=6)
-    ax_b.set_xlabel(f"{method} Dim 1", fontsize=12, fontweight='bold')
-    ax_b.set_ylabel("Dim 2", fontsize=12, fontweight='bold')
-    ax_b.grid(True, alpha=0.15, linestyle='--')
+    # Highlight the two special points so they stand out clearly
+    for idx in [anno_point1, anno_point2]:
+        ax_b.scatter(base_2d[idx, 0], base_2d[idx, 1],
+                     c=[zones[idx]], cmap=CMAP_ZONES,
+                     marker=markers[channels[idx]], s=HIGHLIGHT_SIZE,
+                     alpha=1.0, edgecolors='black', linewidths=HIGHLIGHT_LW,
+                     zorder=12)
 
-    # Right: LUMI (no jitter)
+    # Short, clean title (put full description in Figure Caption)
+    ax_b.set_title("(b) Baseline — Text Tokenizer", fontsize=11.5, pad=8, fontweight='bold')
+    ax_b.set_xlabel("t-SNE Dim 1", fontsize=11, fontweight='bold')
+    ax_b.set_ylabel("Dim 2", fontsize=11, fontweight='bold')
+    ax_b.grid(True, alpha=0.12, linestyle='--', linewidth=0.6)
+
+    # ---------- Right: LUMI ----------
     for i in range(3):
         mask = (channels == i) & keep_mask
         if mask.sum() == 0:
             continue
         ax_c.scatter(prop_2d_vis[mask, 0], prop_2d_vis[mask, 1],
-                    c=zones[mask], cmap=cmap_rainbow,
-                    marker=markers[i], s=PIXEL_SIZE, alpha=0.88,
-                    edgecolors='black', linewidths=0.3)
+                     c=zones[mask], cmap=CMAP_ZONES,
+                     marker=markers[i], s=PIXEL_SIZE, alpha=ALPHA_RIGHT,
+                     edgecolors='none', zorder=3)
 
-    ax_c.set_title("(c) LUMI — Pixel Embedding\n",
-                   fontsize=10.5, pad=6)
-    ax_c.set_xlabel(f"{method} Dim 1", fontsize=12, fontweight='bold')
-    ax_c.set_ylabel("Dim 2", fontsize=12, fontweight='bold')
-    ax_c.grid(True, alpha=0.15, linestyle='--')
+    # Highlight the two special points
+    for idx in [anno_point1, anno_point2]:
+        ax_c.scatter(prop_2d_vis[idx, 0], prop_2d_vis[idx, 1],
+                     c=[zones[idx]], cmap=CMAP_ZONES,
+                     marker=markers[channels[idx]], s=HIGHLIGHT_SIZE,
+                     alpha=1.0, edgecolors='black', linewidths=HIGHLIGHT_LW,
+                     zorder=12)
 
-    # Legend
-    marker_handles = [Line2D([0], [0], marker=markers[i], color='w', markerfacecolor='#444444',
-                             markersize=8, markeredgecolor='black', markeredgewidth=0.4,
-                             label=f'{ch_names[i]} subpixel') for i in range(3)]
-    zone_handles = [Patch(facecolor=RAINBOW_COLORS[i], edgecolor='black', linewidth=0.5,
-                          label=f'Z{i}: {i*36}-{min(255,(i+1)*36-1)}') for i in range(7)]
-    fig.legend(handles=marker_handles + zone_handles, loc='center right',
-               bbox_to_anchor=(1.015, 0.5), fontsize=8.5, framealpha=0.92)
+    ax_c.set_title("(c) LUMI — Pixel Embedding", fontsize=11.5, pad=8, fontweight='bold')
+    ax_c.set_xlabel(f"{method_right} Dim 1", fontsize=11, fontweight='bold')
+    ax_c.set_ylabel("Dim 2", fontsize=11, fontweight='bold')
+    ax_c.grid(True, alpha=0.12, linestyle='--', linewidth=0.6)
 
-    # ========== Annotation ==========
+    # ====================== Legend ======================
+    marker_handles = [
+        Line2D([0], [0], marker=markers[i], color='w',
+               markerfacecolor='#444444', markersize=8.5,
+               markeredgecolor='black', markeredgewidth=0.5,
+               label=f'{ch_names[i]} subpixel')
+        for i in range(3)
+    ]
+    zone_handles = [
+        Patch(facecolor=CMAP_ZONES(i / 6), edgecolor='black', linewidth=0.5,
+              label=f'Z{i}: {i*36}-{min(255, (i+1)*36-1)}')
+        for i in range(7)
+    ]
+    fig.legend(handles=marker_handles + zone_handles,
+               loc='center right', bbox_to_anchor=(1.012, 0.5),
+               fontsize=8.2, framealpha=0.94, title="Channel / Zone")
+
+    # ====================== Refined Annotations ======================
     def annotate_pair(ax, embs, idx1, idx2, is_left=False):
         val1 = pixel_values_full[idx1]
         val2 = pixel_values_full[idx2]
@@ -286,71 +339,74 @@ def main():
         ch2 = ch_names[channels[idx2]]
 
         if is_left:
-            # Left plot: ONE annotation box + two arrows
+            # Left: single elegant annotation box + two thin arrows
             text = (f"{ch1}={val1}  &  {ch2}={val2}\n"
-                    f"Different channels collapse into neighboring embeddings.")
+                    f"Different channels collapse into\nneighboring embeddings")
             ax.annotate(
                 text,
                 xy=(embs[idx1, 0], embs[idx1, 1]),
-                xytext=(0.66, 0.27),
+                xytext=(0.63, 0.29),
                 textcoords='axes fraction',
                 ha='left', va='center',
-                fontsize=8.2, fontweight='bold', color='#8B0000',
-                linespacing=1.25,
-                bbox=dict(boxstyle='round,pad=0.45', facecolor='white', alpha=0.96,
-                          edgecolor='#cc0000', linewidth=1.1),
-                arrowprops=dict(arrowstyle='->', color='#cc0000', lw=1.8,
-                                connectionstyle='arc3,rad=0.2'),
+                fontsize=8.0, fontweight='bold', color='#9C1F1F',
+                linespacing=1.15,
+                bbox=dict(boxstyle='round,pad=0.4', facecolor='white', alpha=0.97,
+                          edgecolor='#B22222', linewidth=0.9),
+                arrowprops=dict(arrowstyle='->', color='#B22222', lw=1.25,
+                                connectionstyle='arc3,rad=0.18'),
                 zorder=20
             )
-            # Second arrow (empty text)
+            # Second thin arrow
             ax.annotate(
                 "",
                 xy=(embs[idx2, 0], embs[idx2, 1]),
-                xytext=(0.78, 0.31),
+                xytext=(0.76, 0.33),
                 textcoords='axes fraction',
-                arrowprops=dict(arrowstyle='->', color='#cc0000', lw=1.8,
-                                connectionstyle='arc3,rad=-0.18'),
+                arrowprops=dict(arrowstyle='->', color='#B22222', lw=1.25,
+                                connectionstyle='arc3,rad=-0.16'),
                 zorder=19
             )
         else:
-            # Right plot: ONE annotation box + two arrows (consistent with left)
+            # Right: ONE combined annotation box + two thin arrows (consistent style with left)
             text = (f"{ch1}={val1}  &  {ch2}={val2}\n"
                     f"Different channels are explicitly disentangled.")
             ax.annotate(
                 text,
                 xy=(embs[idx1, 0], embs[idx1, 1]),
-                xytext=(0.58, 0.24),
+                xytext=(0.58, 0.22),
                 textcoords='axes fraction',
                 ha='left', va='center',
-                fontsize=8.2, fontweight='bold', color='#8B0000',
-                linespacing=1.25,
-                bbox=dict(boxstyle='round,pad=0.45', facecolor='white', alpha=0.96,
-                          edgecolor='#cc0000', linewidth=1.1),
-                arrowprops=dict(arrowstyle='->', color='#cc0000', lw=1.8,
-                                connectionstyle='arc3,rad=0.2'),
+                fontsize=8.0, fontweight='bold', color='#9C1F1F',
+                linespacing=1.15,
+                bbox=dict(boxstyle='round,pad=0.4', facecolor='white', alpha=0.97,
+                          edgecolor='#B22222', linewidth=0.9),
+                arrowprops=dict(arrowstyle='->', color='#B22222', lw=1.25,
+                                connectionstyle='arc3,rad=0.18'),
                 zorder=20
             )
-            # Second arrow (empty text)
+            # Second thin arrow pointing to the other point
             ax.annotate(
                 "",
                 xy=(embs[idx2, 0], embs[idx2, 1]),
-                xytext=(0.78, 0.29),
+                xytext=(0.72, 0.26),
                 textcoords='axes fraction',
-                arrowprops=dict(arrowstyle='->', color='#cc0000', lw=1.8,
-                                connectionstyle='arc3,rad=-0.18'),
+                arrowprops=dict(arrowstyle='->', color='#B22222', lw=1.25,
+                                connectionstyle='arc3,rad=-0.15'),
                 zorder=19
             )
 
     if args.add_annotation:
         annotate_pair(ax_b, base_2d, anno_point1, anno_point2, is_left=True)
         annotate_pair(ax_c, prop_2d_vis, anno_point1, anno_point2, is_left=False)
-        print("[Annotation] Single box annotation on both plots")
+        print("[Annotation] Combined annotation on right plot with disentanglement message")
 
-    plt.tight_layout(rect=[0, 0.01, 0.87, 0.98])
+    # ====================== Save ======================
+    plt.tight_layout(rect=[0, 0.01, 0.865, 0.985])
     out_path = os.path.abspath(args.output)
     fig.savefig(out_path, bbox_inches='tight', dpi=300, facecolor='white')
-    print(f"\n[Saved] {out_path}")
+    print(f"\n[Saved] Improved figure → {out_path}")
+    print("Tips: Move the long descriptive text into your LaTeX figure caption for a cleaner look.")
+
 
 if __name__ == "__main__":
     main()
