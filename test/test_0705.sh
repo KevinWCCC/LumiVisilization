@@ -1,15 +1,13 @@
 # # python pllm_0617_01.py \
 
-python vis_pixel_embedding_final.py\
+python test_0705.py\
     --model_id /home/vipuser/Model/LLAMA_3.1_B \
     --dataset koadk \
     --ckpt_dir models \
     --use_best \
     --yellow_jitter_range 5 \
-    --output pixel_embedding_0704
+    --output pixel_embedding_0705
     # --no_annotation\
-
-# # python pllm_0617_01.py \
 
 # # python pllm_0617_01.py \
 # python test_0703_02.py --dataset koadk

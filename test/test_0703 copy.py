@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Final Version - Single Annotation on Left + Square Subplots
+Final Version - Unified Single Annotation Box on Both Plots
 ===========================================================
-- Left (b): One annotation box pointing to both similar-intensity points
-- Right (c): Two separate annotations
+- Left (b): One annotation box + two arrows (Baseline confusion)
+- Right (c): One annotation box + two arrows (LUMI disentanglement)
 - Both subplot panels rendered as true squares
 - No jitter on LUMI
 - Outlier removal applied to both plots
@@ -38,7 +38,7 @@ plt.rcParams['figure.dpi'] = 150
 plt.rcParams['savefig.dpi'] = 300
 plt.rcParams['font.size'] = 12
 
-PIXEL_SIZE = 110
+PIXEL_SIZE = 80
 
 def get_text_tokenizer_embedding(pixel_values, tokenizer, emb, device):
     all_embs = []
@@ -126,7 +126,7 @@ def main():
     zones = np.repeat(logical_zones, 3)
     logical_ids = np.arange(N_SUB) // 3
 
-    RAINBOW_COLORS = ['#1F78B4', '#33A02C', '#FFEB3B', '#FF9800', '#E53935', '#8E24AA', '#00BCD4']
+    RAINBOW_COLORS = ['#5A587A', '#566C91', '#4F8394', '#5A9A91', '#82AE8C', '#A8BC87', '#C6C98D']
     cmap_rainbow = ListedColormap(RAINBOW_COLORS)
 
     print("[4/5] Extracting embeddings ...")
@@ -247,9 +247,7 @@ def main():
                     marker=markers[i], s=PIXEL_SIZE, alpha=0.85,
                     edgecolors='black', linewidths=0.3)
 
-    ax_b.set_title("(b) Baseline — Text Tokenizer\n"
-                   "pixel value → string → real tokenizer → mean pooling\n"
-                   "Similar intensity points tend to cluster",
+    ax_b.set_title("(b) Baseline — Text Tokenizer\n",
                    fontsize=10.5, pad=6)
     ax_b.set_xlabel(f"{method} Dim 1", fontsize=12, fontweight='bold')
     ax_b.set_ylabel("Dim 2", fontsize=12, fontweight='bold')
@@ -265,9 +263,7 @@ def main():
                     marker=markers[i], s=PIXEL_SIZE, alpha=0.88,
                     edgecolors='black', linewidths=0.3)
 
-    ax_c.set_title("(c) LUMI — Pixel Embedding + INP\n"
-                   "Learned channel-aware + position-aware representation\n"
-                   "Similar intensity points clearly separated by subchannel",
+    ax_c.set_title("(c) LUMI — Pixel Embedding\n",
                    fontsize=10.5, pad=6)
     ax_c.set_xlabel(f"{method} Dim 1", fontsize=12, fontweight='bold')
     ax_c.set_ylabel("Dim 2", fontsize=12, fontweight='bold')
@@ -292,15 +288,14 @@ def main():
         if is_left:
             # Left plot: ONE annotation box + two arrows
             text = (f"{ch1}={val1}  &  {ch2}={val2}\n"
-                    f"Similar intensity (text tokenized)\n"
-                    f"→ tend to cluster / confused")
+                    f"Different channels collapse into neighboring embeddings.")
             ax.annotate(
                 text,
                 xy=(embs[idx1, 0], embs[idx1, 1]),
                 xytext=(0.66, 0.27),
                 textcoords='axes fraction',
                 ha='left', va='center',
-                fontsize=10.2, fontweight='bold', color='#8B0000',
+                fontsize=8.2, fontweight='bold', color='#8B0000',
                 linespacing=1.25,
                 bbox=dict(boxstyle='round,pad=0.45', facecolor='white', alpha=0.96,
                           edgecolor='#cc0000', linewidth=1.1),
@@ -319,35 +314,38 @@ def main():
                 zorder=19
             )
         else:
-            # Right plot: two separate annotations
-            ax.annotate(f"{ch1}={val1}",
-                        xy=(embs[idx1, 0], embs[idx1, 1]),
-                        xytext=(0.54, 0.17),
-                        textcoords='axes fraction',
-                        ha='left', va='center',
-                        fontsize=9.8, fontweight='bold', color='#8B0000',
-                        arrowprops=dict(arrowstyle='->', color='#cc0000', lw=1.5,
-                                        connectionstyle='arc3,rad=0.16'),
-                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.95,
-                                  edgecolor='#cc0000'),
-                        zorder=14)
-
-            ax.annotate(f"{ch2}={val2} (similar intensity)",
-                        xy=(embs[idx2, 0], embs[idx2, 1]),
-                        xytext=(0.54, 0.08),
-                        textcoords='axes fraction',
-                        ha='left', va='center',
-                        fontsize=9.8, fontweight='bold', color='#8B0000',
-                        arrowprops=dict(arrowstyle='->', color='#cc0000', lw=1.5,
-                                        connectionstyle='arc3,rad=-0.14'),
-                        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.95,
-                                  edgecolor='#cc0000'),
-                        zorder=14)
+            # Right plot: ONE annotation box + two arrows (consistent with left)
+            text = (f"{ch1}={val1}  &  {ch2}={val2}\n"
+                    f"Different channels are explicitly disentangled.")
+            ax.annotate(
+                text,
+                xy=(embs[idx1, 0], embs[idx1, 1]),
+                xytext=(0.58, 0.24),
+                textcoords='axes fraction',
+                ha='left', va='center',
+                fontsize=8.2, fontweight='bold', color='#8B0000',
+                linespacing=1.25,
+                bbox=dict(boxstyle='round,pad=0.45', facecolor='white', alpha=0.96,
+                          edgecolor='#cc0000', linewidth=1.1),
+                arrowprops=dict(arrowstyle='->', color='#cc0000', lw=1.8,
+                                connectionstyle='arc3,rad=0.2'),
+                zorder=20
+            )
+            # Second arrow (empty text)
+            ax.annotate(
+                "",
+                xy=(embs[idx2, 0], embs[idx2, 1]),
+                xytext=(0.78, 0.29),
+                textcoords='axes fraction',
+                arrowprops=dict(arrowstyle='->', color='#cc0000', lw=1.8,
+                                connectionstyle='arc3,rad=-0.18'),
+                zorder=19
+            )
 
     if args.add_annotation:
         annotate_pair(ax_b, base_2d, anno_point1, anno_point2, is_left=True)
         annotate_pair(ax_c, prop_2d_vis, anno_point1, anno_point2, is_left=False)
-        print("[Annotation] Single box on left, separate on right")
+        print("[Annotation] Single box annotation on both plots")
 
     plt.tight_layout(rect=[0, 0.01, 0.87, 0.98])
     out_path = os.path.abspath(args.output)
